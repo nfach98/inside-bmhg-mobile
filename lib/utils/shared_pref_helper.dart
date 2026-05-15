@@ -1,13 +1,14 @@
+import 'package:injectable/injectable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+@singleton
 class SharedPrefHelper {
-  late SharedPreferences _pref;
+  final SharedPreferences _pref;
 
-  SharedPrefHelper() {
-    init();
-  }
+  SharedPrefHelper(this._pref);
 
-  Future<void> init() async {
-    _pref = await SharedPreferences.getInstance();
-  }
+  // Example helper methods
+  String? getString(String key) => _pref.getString(key);
+  Future<bool> setString(String key, String value) => _pref.setString(key, value);
+  Future<bool> remove(String key) => _pref.remove(key);
 }

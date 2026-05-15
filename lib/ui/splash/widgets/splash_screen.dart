@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:inside_bmhg/config/injection.dart';
 import 'package:inside_bmhg/ui/splash/bloc/splash_bloc.dart';
-import 'package:inside_bmhg/ui/splash/bloc/splash_event.dart';
 import 'package:inside_bmhg/ui/splash/bloc/splash_state.dart';
 
 class SplashScreen extends StatelessWidget {
@@ -13,7 +13,7 @@ class SplashScreen extends StatelessWidget {
     final theme = Theme.of(context);
 
     return BlocProvider(
-      create: (context) => SplashBloc()..add(CheckLoginEvent()),
+      create: (context) => getIt<SplashBloc>(),
       child: BlocListener<SplashBloc, SplashState>(
         listener: (context, state) {
           if (state.status == SplashStatus.unauthenticated) {
