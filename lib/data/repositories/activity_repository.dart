@@ -1,0 +1,7 @@
+import 'package:inside_bmhg/utils/shared_pref_helper.dart';
+
+class ActivityRepository {
+  final SharedPrefHelper spHelper;
+
+  const ActivityRepository({required this.spHelper});
+}
