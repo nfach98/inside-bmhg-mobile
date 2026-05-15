@@ -1,5 +1,5 @@
 class ApiUrls {
-  static const String BASE_URL = 'http://localhost:8000/api';
+  static const String BASE_URL = 'https://inside.beasiswamahaghora.com/api';
 
   /// AUTHENTICATION
   static const String login = '/login';
