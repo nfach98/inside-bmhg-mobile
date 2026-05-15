@@ -5,7 +5,7 @@ import 'package:inside_bmhg/ui/core/themes/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  configureDependencies();
+  await configureDependencies();
   runApp(const App());
 }
 
