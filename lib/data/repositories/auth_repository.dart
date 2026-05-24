@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
 import 'package:inside_bmhg/config/api_urls.dart';
-import 'package:inside_bmhg/config/pref_keys.dart';
 import 'package:inside_bmhg/data/exceptions/api_exception.dart';
 import 'package:inside_bmhg/utils/shared_pref_helper.dart';
 

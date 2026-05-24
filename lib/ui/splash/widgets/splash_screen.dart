@@ -16,11 +16,19 @@ class SplashScreen extends StatelessWidget {
     return BlocProvider(
       create: (context) => getIt<SplashBloc>()..add(CheckLoginEvent()),
       child: BlocListener<SplashBloc, SplashState>(
+        listenWhen: (previous, current) =>
+            previous.status != current.status &&
+            (current.status == SplashStatus.authenticated ||
+                current.status == SplashStatus.unauthenticated),
         listener: (context, state) {
-          if (state.status == SplashStatus.unauthenticated) {
-            context.go('/login');
-          } else if (state.status == SplashStatus.authenticated) {
-            context.go('/');
+          switch (state.status) {
+            case SplashStatus.authenticated:
+              context.go('/');
+            case SplashStatus.unauthenticated:
+              context.go('/login');
+            case SplashStatus.initial:
+            case SplashStatus.loading:
+              break;
           }
         },
         child: Scaffold(
