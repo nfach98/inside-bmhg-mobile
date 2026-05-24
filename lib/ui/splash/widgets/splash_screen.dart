@@ -30,11 +30,13 @@ class SplashScreen extends StatelessWidget {
           ),
           backgroundColor: theme.colorScheme.primary,
           body: Center(
-            child: Image.asset(
-              'assets/images/logo-bmhg.png',
-              width: 100,
-              height: 100,
-              fit: BoxFit.cover,
+            child: SizedBox(
+              width: 120,
+              height: 48,
+              child: Image.asset(
+                'assets/images/logo-bmhg.png',
+                fit: BoxFit.contain,
+              ),
             ),
           ),
         ),
