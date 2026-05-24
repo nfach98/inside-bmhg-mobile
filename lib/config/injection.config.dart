@@ -24,16 +24,12 @@ import '../utils/shared_pref_helper.dart' as _i259;
 import 'register_module.dart' as _i291;
 
 extension GetItInjectableX on _i174.GetIt {
-// initializes the registration of main-scope dependencies inside of GetIt
+  // initializes the registration of main-scope dependencies inside of GetIt
   Future<_i174.GetIt> init({
     String? environment,
     _i526.EnvironmentFilter? environmentFilter,
   }) async {
-    final gh = _i526.GetItHelper(
-      this,
-      environment,
-      environmentFilter,
-    );
+    final gh = _i526.GetItHelper(this, environment, environmentFilter);
     final registerModule = _$RegisterModule();
     await gh.factoryAsync<_i460.SharedPreferences>(
       () => registerModule.prefs,
@@ -41,15 +37,27 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i535.AttendanceBloc>(() => _i535.AttendanceBloc());
     gh.factory<_i401.HomeBloc>(() => _i401.HomeBloc());
-    gh.factory<_i919.LoginBloc>(() => _i919.LoginBloc());
-    gh.factory<_i1062.SplashBloc>(() => _i1062.SplashBloc());
-    gh.lazySingleton<_i361.Dio>(() => registerModule.dio);
     gh.singleton<_i259.SharedPrefHelper>(
-        () => _i259.SharedPrefHelper(gh<_i460.SharedPreferences>()));
-    gh.factory<_i29.ActivityRepository>(
-        () => _i29.ActivityRepository(spHelper: gh<_i259.SharedPrefHelper>()));
+      () => _i259.SharedPrefHelper(gh<_i460.SharedPreferences>()),
+    );
+    gh.lazySingleton<_i361.Dio>(
+      () => registerModule.dio(gh<_i259.SharedPrefHelper>()),
+    );
     gh.factory<_i578.AuthRepository>(
-        () => _i578.AuthRepository(spHelper: gh<_i259.SharedPrefHelper>()));
+      () => _i578.AuthRepository(
+        dio: gh<_i361.Dio>(),
+        spHelper: gh<_i259.SharedPrefHelper>(),
+      ),
+    );
+    gh.factory<_i919.LoginBloc>(
+      () => _i919.LoginBloc(gh<_i578.AuthRepository>()),
+    );
+    gh.factory<_i1062.SplashBloc>(
+      () => _i1062.SplashBloc(gh<_i578.AuthRepository>()),
+    );
+    gh.factory<_i29.ActivityRepository>(
+      () => _i29.ActivityRepository(spHelper: gh<_i259.SharedPrefHelper>()),
+    );
     return this;
   }
 }

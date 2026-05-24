@@ -20,7 +20,7 @@ class SplashScreen extends StatelessWidget {
           if (state.status == SplashStatus.unauthenticated) {
             context.go('/login');
           } else if (state.status == SplashStatus.authenticated) {
-            context.go('/home');
+            context.go('/');
           }
         },
         child: Scaffold(
