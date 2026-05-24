@@ -56,7 +56,10 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i1062.SplashBloc(gh<_i578.AuthRepository>()),
     );
     gh.factory<_i29.ActivityRepository>(
-      () => _i29.ActivityRepository(spHelper: gh<_i259.SharedPrefHelper>()),
+      () => _i29.ActivityRepository(
+        spHelper: gh<_i259.SharedPrefHelper>(),
+        dio: gh<_i361.Dio>(),
+      ),
     );
     return this;
   }
