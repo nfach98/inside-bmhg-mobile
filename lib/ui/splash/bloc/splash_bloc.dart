@@ -11,7 +11,7 @@ class SplashBloc extends Bloc<SplashEvent, SplashState> {
 
   void _onCheckLogin(CheckLoginEvent event, Emitter<SplashState> emit) async {
     emit(state.copyWith(status: SplashStatus.loading));
-    await Future.delayed(const Duration(seconds: 3));
+    await Future.delayed(const Duration(milliseconds: 1800));
     emit(state.copyWith(status: SplashStatus.unauthenticated));
   }
 }
