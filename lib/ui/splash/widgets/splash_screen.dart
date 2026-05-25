@@ -16,11 +16,19 @@ class SplashScreen extends StatelessWidget {
     return BlocProvider(
       create: (context) => getIt<SplashBloc>()..add(CheckLoginEvent()),
       child: BlocListener<SplashBloc, SplashState>(
+        listenWhen: (previous, current) =>
+            previous.status != current.status &&
+            (current.status == SplashStatus.authenticated ||
+                current.status == SplashStatus.unauthenticated),
         listener: (context, state) {
-          if (state.status == SplashStatus.unauthenticated) {
-            context.go('/login');
-          } else if (state.status == SplashStatus.authenticated) {
-            context.go('/home');
+          switch (state.status) {
+            case SplashStatus.authenticated:
+              context.go('/');
+            case SplashStatus.unauthenticated:
+              context.go('/login');
+            case SplashStatus.initial:
+            case SplashStatus.loading:
+              break;
           }
         },
         child: Scaffold(
@@ -30,11 +38,13 @@ class SplashScreen extends StatelessWidget {
           ),
           backgroundColor: theme.colorScheme.primary,
           body: Center(
-            child: Image.asset(
-              'assets/images/logo-bmhg.png',
-              width: 100,
-              height: 100,
-              fit: BoxFit.cover,
+            child: SizedBox(
+              width: 120,
+              height: 48,
+              child: Image.asset(
+                'assets/images/logo-bmhg.png',
+                fit: BoxFit.contain,
+              ),
             ),
           ),
         ),

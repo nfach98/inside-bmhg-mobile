@@ -17,9 +17,9 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen>
     with TickerProviderStateMixin {
   // ── Controllers and Focus Nodes ───────────────────────────────────────────
-  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final FocusNode _usernameFocus = FocusNode();
+  final FocusNode _emailFocus = FocusNode();
   final FocusNode _passwordFocus = FocusNode();
 
   bool _obscurePassword = true;
@@ -36,10 +36,10 @@ class _LoginScreenState extends State<LoginScreen>
   late Animation<double> _titleFade;
   late Animation<Offset> _titleSlide;
 
-  late Animation<double> _usernameLabelFade;
-  late Animation<Offset> _usernameLabelSlide;
-  late Animation<double> _usernameFieldFade;
-  late Animation<Offset> _usernameFieldSlide;
+  late Animation<double> _emailLabelFade;
+  late Animation<Offset> _emailLabelSlide;
+  late Animation<double> _emailFieldFade;
+  late Animation<Offset> _emailFieldSlide;
 
   late Animation<double> _passwordLabelFade;
   late Animation<Offset> _passwordLabelSlide;
@@ -112,28 +112,28 @@ class _LoginScreenState extends State<LoginScreen>
       ),
     );
 
-    // 3. Username Label
-    _usernameLabelFade = Tween<double>(begin: 0.0, end: 1.0).animate(
+    // 3. Email Label
+    _emailLabelFade = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _entryController,
         curve: const Interval(0.3, 0.65, curve: Curves.easeOut),
       ),
     );
-    _usernameLabelSlide = Tween<Offset>(begin: const Offset(0, 0.3), end: Offset.zero).animate(
+    _emailLabelSlide = Tween<Offset>(begin: const Offset(0, 0.3), end: Offset.zero).animate(
       CurvedAnimation(
         parent: _entryController,
         curve: const Interval(0.3, 0.7, curve: Curves.easeOutCubic),
       ),
     );
 
-    // 4. Username Field
-    _usernameFieldFade = Tween<double>(begin: 0.0, end: 1.0).animate(
+    // 4. Email Field
+    _emailFieldFade = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _entryController,
         curve: const Interval(0.35, 0.7, curve: Curves.easeOut),
       ),
     );
-    _usernameFieldSlide = Tween<Offset>(begin: const Offset(0, 0.25), end: Offset.zero).animate(
+    _emailFieldSlide = Tween<Offset>(begin: const Offset(0, 0.25), end: Offset.zero).animate(
       CurvedAnimation(
         parent: _entryController,
         curve: const Interval(0.35, 0.75, curve: Curves.easeOutCubic),
@@ -194,26 +194,26 @@ class _LoginScreenState extends State<LoginScreen>
   @override
   void dispose() {
     _entryController.dispose();
-    _usernameController.dispose();
+    _emailController.dispose();
     _passwordController.dispose();
-    _usernameFocus.dispose();
+    _emailFocus.dispose();
     _passwordFocus.dispose();
     super.dispose();
   }
 
   void _handleLogin(BuildContext blocContext) {
-    final username = _usernameController.text.trim();
+    final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
 
-    if (username.isEmpty || password.isEmpty) {
-      _showSnackBar('Username dan password tidak boleh kosong');
+    if (email.isEmpty || password.isEmpty) {
+      _showSnackBar('Email dan password tidak boleh kosong');
       return;
     }
 
     FocusScope.of(context).unfocus();
 
     blocContext.read<LoginBloc>().add(
-          LoginSubmitEvent(username: username, password: password),
+          LoginSubmitEvent(email: email, password: password),
         );
   }
 
@@ -248,7 +248,7 @@ class _LoginScreenState extends State<LoginScreen>
           if (state.status == LoginStatus.success) {
             context.go('/'); // Home screen route
           } else if (state.status == LoginStatus.failure) {
-            _showSnackBar(state.errorMessage ?? 'Username atau Password salah');
+            _showSnackBar(state.errorMessage ?? 'Email atau password salah');
           }
         },
         builder: (context, state) {
@@ -316,13 +316,13 @@ class _LoginScreenState extends State<LoginScreen>
                       // Exact Title to Username Gap: 113.5px
                       const SizedBox(height: 113.5),
 
-                      // 3. Username Label (Inter regular 14px, #000000)
+                      // 3. Email Label (Inter regular 14px, #000000)
                       SlideTransition(
-                        position: _usernameLabelSlide,
+                        position: _emailLabelSlide,
                         child: FadeTransition(
-                          opacity: _usernameLabelFade,
+                          opacity: _emailLabelFade,
                           child: const Text(
-                            'Username',
+                            'Email',
                             style: TextStyle(
                               fontFamily: 'Archivo',
                               fontSize: 14,
@@ -336,15 +336,16 @@ class _LoginScreenState extends State<LoginScreen>
                       // Exact Label to Field Gap: 4.5px
                       const SizedBox(height: 4.5),
 
-                      // 4. Username Field (Exact height 40px, border radius 8px, #1A2185)
+                      // 4. Email Field (Exact height 40px, border radius 8px, #1A2185)
                       SlideTransition(
-                        position: _usernameFieldSlide,
+                        position: _emailFieldSlide,
                         child: FadeTransition(
-                          opacity: _usernameFieldFade,
+                          opacity: _emailFieldFade,
                           child: _buildTextField(
-                            controller: _usernameController,
-                            focusNode: _usernameFocus,
-                            hint: 'Masukkan username',
+                            controller: _emailController,
+                            focusNode: _emailFocus,
+                            hint: 'Masukkan email',
+                            keyboardType: TextInputType.emailAddress,
                             textInputAction: TextInputAction.next,
                             onSubmitted: (_) => _passwordFocus.requestFocus(),
                           ),
@@ -469,6 +470,7 @@ class _LoginScreenState extends State<LoginScreen>
     required TextEditingController controller,
     required FocusNode focusNode,
     required String hint,
+    TextInputType keyboardType = TextInputType.text,
     TextInputAction textInputAction = TextInputAction.done,
     ValueChanged<String>? onSubmitted,
   }) {
@@ -494,6 +496,7 @@ class _LoginScreenState extends State<LoginScreen>
           child: TextField(
             controller: controller,
             focusNode: focusNode,
+            keyboardType: keyboardType,
             textInputAction: textInputAction,
             onSubmitted: onSubmitted,
             style: const TextStyle(
