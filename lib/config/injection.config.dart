@@ -36,7 +36,6 @@ extension GetItInjectableX on _i174.GetIt {
       preResolve: true,
     );
     gh.factory<_i535.AttendanceBloc>(() => _i535.AttendanceBloc());
-    gh.factory<_i401.HomeBloc>(() => _i401.HomeBloc());
     gh.singleton<_i259.SharedPrefHelper>(
       () => _i259.SharedPrefHelper(gh<_i460.SharedPreferences>()),
     );
@@ -48,6 +47,9 @@ extension GetItInjectableX on _i174.GetIt {
         dio: gh<_i361.Dio>(),
         spHelper: gh<_i259.SharedPrefHelper>(),
       ),
+    );
+    gh.factory<_i401.HomeBloc>(
+      () => _i401.HomeBloc(gh<_i578.AuthRepository>()),
     );
     gh.factory<_i919.LoginBloc>(
       () => _i919.LoginBloc(gh<_i578.AuthRepository>()),
