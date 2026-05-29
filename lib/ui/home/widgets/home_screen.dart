@@ -1,22 +1,160 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:inside_bmhg/config/injection.dart';
 import 'package:inside_bmhg/ui/home/bloc/home_bloc.dart';
+import 'package:inside_bmhg/ui/home/bloc/home_event.dart';
 import 'package:inside_bmhg/ui/home/bloc/home_state.dart';
-import 'package:syncfusion_flutter_charts/charts.dart';
-import 'package:go_router/go_router.dart';
-
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
+
+  static const Color _brandNavy = Color(0xFF1A2185);
+  static const Color _pureBlack = Color(0xFF000000);
+  static const Color _neutralGrey = Color(0xFFF6F8FB);
+
+  void _showLogoutDialog(BuildContext context, HomeBloc bloc) {
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (dialogContext) {
+        return Dialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          elevation: 8,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.red.shade50,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.logout_rounded,
+                    color: Colors.red.shade600,
+                    size: 32,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'Konfirmasi Keluar',
+                  style: TextStyle(
+                    fontFamily: 'Archivo',
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: _pureBlack,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Apakah Anda yakin ingin keluar dari aplikasi InsideBMHG?',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontFamily: 'Archivo',
+                    fontSize: 14,
+                    color: Colors.grey.shade600,
+                    height: 1.4,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () => Navigator.of(dialogContext).pop(),
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          side: BorderSide(color: Colors.grey.shade300),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: Text(
+                          'Batal',
+                          style: TextStyle(
+                            fontFamily: 'Archivo',
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.grey.shade700,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(dialogContext).pop();
+                          bloc.add(HomeLogoutEvent());
+                        },
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          backgroundColor: Colors.red.shade600,
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: const Text(
+                          'Keluar',
+                          style: TextStyle(
+                            fontFamily: 'Archivo',
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                )
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _showSnackBar(BuildContext context, String message, {bool isError = true}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          message,
+          style: const TextStyle(
+            fontFamily: 'Archivo',
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        backgroundColor: isError ? Colors.red.shade800 : Colors.green.shade800,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        margin: const EdgeInsets.all(16),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => getIt<HomeBloc>(),
-      child: BlocBuilder<HomeBloc, HomeState>(
+      child: BlocConsumer<HomeBloc, HomeState>(
+        listener: (context, state) {
+          if (state.status == HomeStatus.logoutSuccess) {
+            context.go('/login');
+          } else if (state.status == HomeStatus.failure) {
+            _showSnackBar(context, state.errorMessage ?? 'Gagal melakukan logout');
+          }
+        },
         builder: (context, state) {
-          // Data dummy chart (Nantinya data ini diambil dari `state`)
+          final bloc = context.read<HomeBloc>();
+          final isLoading = state.status == HomeStatus.loading;
+
+          // Data dummy chart
           final shifts = [
             ShiftData(day: 'Senin', hours: 5),
             ShiftData(day: 'Selasa', hours: 6),
@@ -42,12 +180,31 @@ class HomeScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Riwayat Shift & Weekly',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Riwayat Shift & Weekly',
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: _brandNavy,
+                          ),
+                        ),
+                        IconButton(
+                          icon: isLoading
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2.2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.redAccent),
+                                  ),
+                                )
+                              : const Icon(Icons.logout_rounded, color: Colors.redAccent),
+                          onPressed: isLoading ? null : () => _showLogoutDialog(context, bloc),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 16),
 

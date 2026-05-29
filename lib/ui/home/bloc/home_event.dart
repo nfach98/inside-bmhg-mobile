@@ -8,3 +8,5 @@ class HomeEvent extends Equatable {
 }
 
 class HomeInitialEvent extends HomeEvent {}
+
+class HomeLogoutEvent extends HomeEvent {}

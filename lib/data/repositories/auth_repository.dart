@@ -20,6 +20,10 @@ class AuthRepository {
     return token != null && token.isNotEmpty;
   }
 
+  Future<void> logout() async {
+    await _spHelper.clearToken();
+  }
+
   Future<void> login({
     required String email,
     required String password,
