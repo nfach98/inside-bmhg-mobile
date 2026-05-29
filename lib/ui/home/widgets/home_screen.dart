@@ -4,6 +4,8 @@ import 'package:inside_bmhg/config/injection.dart';
 import 'package:inside_bmhg/ui/home/bloc/home_bloc.dart';
 import 'package:inside_bmhg/ui/home/bloc/home_state.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:go_router/go_router.dart';
+
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -84,8 +86,7 @@ class HomeScreen extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(height: 16),
-
-                          // Mengatur tinggi chart agar ideal tidak terlalu jangkung
+                          //chart
                           SizedBox(
                             height: 300,
                             child: SfCartesianChart(
@@ -139,8 +140,6 @@ class HomeScreen extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(height: 16),
-
-                          // Menyusun kotak tanggal secara horizontal dengan spasi seimbang
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: meetings.map((meeting) {
@@ -155,7 +154,7 @@ class HomeScreen extends StatelessWidget {
                     // TOMBOL PRESENSI
                     InkWell(
                       onTap: () {
-                        // Aksi tombol presensi
+                        context.go('/attendance');
                       },
                       borderRadius: BorderRadius.circular(12),
                       child: Container(
