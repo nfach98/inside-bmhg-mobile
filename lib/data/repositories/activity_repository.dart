@@ -1,4 +1,3 @@
-
 import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
 import 'package:inside_bmhg/config/api_urls.dart';
@@ -19,15 +18,30 @@ class ActivityRepository {
   ) async {
     try {
       final token = spHelper.getString('token');
+
+      final formData = FormData.fromMap({
+        'activity': activity,
+        'user_lat': userLat,
+        'user_lon': userLon,
+      });
+
       final response = await dio.post(
         ApiUrls.createActivity,
-        options: Options(headers: {'Authorization': 'Bearer $token'}),
-        data: {'activity': activity, 'user_lat': userLat, 'user_lon': userLon},
+        data: formData,
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'multipart/form-data',
+          },
+        ),
       );
-      final responseData = response.data;
-      return ResponseActivity.fromJson(responseData);
-    } catch (e) {
-      throw Exception('Failed to create activity: $e');
+
+      return ResponseActivity.fromJson(response.data);
+    } on DioException catch (e) {
+      print("STATUS: ${e.response?.statusCode}");
+      print("DATA: ${e.response?.data}");
+
+      throw Exception('Failed to create activity: ${e.response?.data}');
     }
   }
 

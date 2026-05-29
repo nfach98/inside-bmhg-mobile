@@ -5,6 +5,7 @@ import 'package:inside_bmhg/ui/home/bloc/home_state.dart';
 
 @injectable
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
+
   HomeBloc() : super(const HomeState()) {
     on<HomeInitialEvent>(_onHomeInitial);
   }
