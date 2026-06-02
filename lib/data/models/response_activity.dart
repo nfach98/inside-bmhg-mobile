@@ -1,7 +1,7 @@
 class ResponseActivity {
   String? status;
   String? message;
-  List<Data>? data;
+  List<Shift>? data;
 
   ResponseActivity({this.status, this.message, this.data});
 
@@ -9,9 +9,9 @@ class ResponseActivity {
     status = json['status'];
     message = json['message'];
     if (json['data'] != null) {
-      data = <Data>[];
+      data = <Shift>[];
       json['data'].forEach((v) {
-        data!.add(new Data.fromJson(v));
+        data!.add(new Shift.fromJson(v));
       });
     }
   }
@@ -27,7 +27,7 @@ class ResponseActivity {
   }
 }
 
-class Data {
+class Shift {
   int? id;
   String? userId;
   String? activity;
@@ -36,7 +36,7 @@ class Data {
   String? userLat;
   String? userLon;
 
-  Data({
+  Shift({
     this.id,
     this.userId,
     this.activity,
@@ -46,7 +46,7 @@ class Data {
     this.userLon,
   });
 
-  Data.fromJson(Map<String, dynamic> json) {
+  Shift.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     userId = json['user_id'];
     activity = json['activity'];
