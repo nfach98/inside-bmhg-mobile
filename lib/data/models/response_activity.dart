@@ -48,12 +48,12 @@ class Shift {
 
   Shift.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    userId = json['user_id'];
+    userId = json['user_id']?.toString();
     activity = json['activity'];
     device = json['device'];
     timestamp = json['timestamp'];
-    userLat = json['user_lat'];
-    userLon = json['user_lon'];
+    userLat = json['user_lat']?.toString();
+    userLon = json['user_lon']?.toString();
   }
 
   Map<String, dynamic> toJson() {
