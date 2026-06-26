@@ -53,9 +53,6 @@ extension GetItInjectableX on _i174.GetIt {
         spHelper: gh<_i259.SharedPrefHelper>(),
       ),
     );
-    gh.factory<_i401.HomeBloc>(
-      () => _i401.HomeBloc(gh<_i578.AuthRepository>()),
-    );
     gh.factory<_i919.LoginBloc>(
       () => _i919.LoginBloc(gh<_i578.AuthRepository>()),
     );
@@ -64,6 +61,12 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i535.AttendanceBloc>(
       () => _i535.AttendanceBloc(gh<_i29.ActivityRepository>()),
+    );
+    gh.factory<_i401.HomeBloc>(
+      () => _i401.HomeBloc(
+        gh<_i578.AuthRepository>(),
+        gh<_i29.ActivityRepository>(),
+      ),
     );
     return this;
   }

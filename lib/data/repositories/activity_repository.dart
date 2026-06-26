@@ -11,20 +11,22 @@ class ActivityRepository {
 
   const ActivityRepository({required this.spHelper, required this.dio});
 
+  String _formatDate(DateTime date) {
+    return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+  }
+
   Future<ResponseActivity> createactivity(
     String activity,
     String userLat,
     String userLon,
   ) async {
     try {
-      final token = spHelper.getString('token');
-
+      final token = spHelper.getToken();
       final formData = FormData.fromMap({
         'activity': activity,
         'user_lat': userLat,
         'user_lon': userLon,
       });
-
       final response = await dio.post(
         ApiUrls.createActivity,
         data: formData,
@@ -50,13 +52,13 @@ class ActivityRepository {
     DateTime? endDate,
   ) async {
     try {
-      final token = spHelper.getString('token');
+      final token = spHelper.getToken();
       final response = await dio.get(
         ApiUrls.getShifts,
         options: Options(headers: {'Authorization': 'Bearer $token'}),
         queryParameters: {
-          'start_date': startDate?.toIso8601String(),
-          'end_date': endDate?.toIso8601String(),
+          if (startDate != null) 'start_date': _formatDate(startDate),
+          if (endDate != null) 'end_date': _formatDate(endDate),
         },
       );
       final responseData = response.data;
@@ -71,13 +73,13 @@ class ActivityRepository {
     DateTime? endDate,
   ) async {
     try {
-      final token = spHelper.getString('token');
+      final token = spHelper.getToken();
       final response = await dio.get(
         ApiUrls.getMeetings,
         options: Options(headers: {'Authorization': 'Bearer $token'}),
         queryParameters: {
-          'start_date': startDate?.toIso8601String(),
-          'end_date': endDate?.toIso8601String(),
+          if (startDate != null) 'start_date': _formatDate(startDate),
+          if (endDate != null) 'end_date': _formatDate(endDate),
         },
       );
       final responseData = response.data;

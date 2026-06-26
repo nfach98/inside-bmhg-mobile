@@ -1,7 +1,7 @@
 class ResponseActivity {
   String? status;
   String? message;
-  List<Data>? data;
+  List<Shift>? data;
 
   ResponseActivity({this.status, this.message, this.data});
 
@@ -9,17 +9,17 @@ class ResponseActivity {
     status = json['status'];
     message = json['message'];
     if (json['data'] != null) {
-      data = <Data>[];
+      data = <Shift>[];
       json['data'].forEach((v) {
-        data!.add(Data.fromJson(v));
+        data!.add(new Shift.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['status'] = status;
-    data['message'] = message;
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['status'] = this.status;
+    data['message'] = this.message;
     if (this.data != null) {
       data['data'] = this.data!.map((v) => v.toJson()).toList();
     }
@@ -27,7 +27,7 @@ class ResponseActivity {
   }
 }
 
-class Data {
+class Shift {
   int? id;
   String? userId;
   String? activity;
@@ -36,7 +36,7 @@ class Data {
   String? userLat;
   String? userLon;
 
-  Data({
+  Shift({
     this.id,
     this.userId,
     this.activity,
@@ -46,18 +46,18 @@ class Data {
     this.userLon,
   });
 
-  Data.fromJson(Map<String, dynamic> json) {
+  Shift.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    userId = json['user_id'];
+    userId = json['user_id']?.toString();
     activity = json['activity'];
     device = json['device'];
     timestamp = json['timestamp'];
-    userLat = json['user_lat'];
-    userLon = json['user_lon'];
+    userLat = json['user_lat']?.toString();
+    userLon = json['user_lon']?.toString();
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
+    final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = id;
     data['user_id'] = userId;
     data['activity'] = activity;
