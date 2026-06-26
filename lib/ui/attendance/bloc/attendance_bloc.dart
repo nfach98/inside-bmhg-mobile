@@ -1,14 +1,16 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:injectable/injectable.dart';
+import 'package:inside_bmhg/data/repositories/activity_repository.dart';
 import 'package:inside_bmhg/ui/attendance/bloc/attendance_event.dart';
 import 'package:inside_bmhg/ui/attendance/bloc/attendance_state.dart';
 
 @injectable
 class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
-  AttendanceBloc() : super(AttendanceState()) {
+  final ActivityRepository activityRepository;
+
+  AttendanceBloc(this.activityRepository) : super(AttendanceState()) {
     on<AttendanceInitialEvent>(_onInitial);
     on<AttendanceTimeTickEvent>(_onTimeTick);
     on<AttendanceLocationRequestedEvent>(_onLocationRequested);
@@ -29,7 +31,7 @@ class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
     // Mulai jam real-time
     _startClock();
 
-    // Langsung minta lokasi
+    // Langsung minta lokasi (dummy)
     add(const AttendanceLocationRequestedEvent());
   }
 
@@ -44,74 +46,15 @@ class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
     AttendanceLocationRequestedEvent event,
     Emitter<AttendanceState> emit,
   ) async {
-    emit(state.copyWith(isLocationLoading: true, clearLocationError: true));
-
-    try {
-      // Cek apakah layanan lokasi aktif
-      final serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) {
-        emit(
-          state.copyWith(
-            isLocationLoading: false,
-            locationError: 'Layanan lokasi tidak aktif.',
-          ),
-        );
-        return;
-      }
-
-      // Cek & minta izin
-      LocationPermission permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied) {
-          emit(
-            state.copyWith(
-              isLocationLoading: false,
-              locationError: 'Izin lokasi ditolak.',
-            ),
-          );
-          return;
-        }
-      }
-
-      if (permission == LocationPermission.deniedForever) {
-        emit(
-          state.copyWith(
-            isLocationLoading: false,
-            locationError: 'Izin lokasi ditolak permanen. Buka Pengaturan.',
-          ),
-        );
-        return;
-      }
-
-      // Ambil posisi
-      final position = await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(
-          accuracy: LocationAccuracy.high,
-          timeLimit: Duration(seconds: 10),
-        ),
-      );
-
-      final locationName =
-          '${position.latitude.toStringAsFixed(5)}, '
-          '${position.longitude.toStringAsFixed(5)}';
-
-      emit(
-        state.copyWith(
-          isLocationLoading: false,
-          latitude: position.latitude,
-          longitude: position.longitude,
-          locationName: locationName,
-        ),
-      );
-    } catch (e) {
-      emit(
-        state.copyWith(
-          isLocationLoading: false,
-          locationError: 'Gagal mendapatkan lokasi.',
-        ),
-      );
-    }
+    // Using dummy location as requested
+    emit(
+      state.copyWith(
+        isLocationLoading: false,
+        latitude: -6.200000,
+        longitude: 106.816666,
+        locationName: 'Jakarta (Dummy)',
+      ),
+    );
   }
 
   void _onActivitySelected(
@@ -140,15 +83,33 @@ class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
 
     emit(state.copyWith(isLoading: true));
 
-    // TODO: Panggil API absen di sini
-    await Future.delayed(const Duration(seconds: 2));
+    try {
+      // Menggunakan dummy lat/long
+      const dummyLat = '-6.200000';
+      const dummyLon = '106.816666';
 
-    emit(
-      state.copyWith(
-        isLoading: false,
-        response: 'Absen berhasil dicatat!',
-      ),
-    );
+      final responseActivity = await activityRepository.createactivity(
+        state.selectedActivity!,
+        dummyLat,
+        dummyLon,
+      );
+
+      emit(
+        state.copyWith(
+          isLoading: false,
+          response: responseActivity.message ?? 'Absen berhasil dicatat!',
+        ),
+      );
+      print(responseActivity.message);
+    } catch (e) {
+      emit(
+        state.copyWith(
+          isLoading: false,
+          response: 'Gagal mencatat absen: $e',
+        ),
+      );
+      print(e);
+    }
   }
 
   // ---------------------------------------------------------------------------

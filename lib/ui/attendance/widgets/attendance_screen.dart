@@ -12,9 +12,8 @@ class AttendanceScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create:
-          (context) =>
-              getIt<AttendanceBloc>()..add(const AttendanceInitialEvent()),
+      create: (context) =>
+          getIt<AttendanceBloc>()..add(const AttendanceInitialEvent()),
       child: const _AttendanceView(),
     );
   }
@@ -27,7 +26,7 @@ class AttendanceScreen extends StatelessWidget {
 class _AttendanceView extends StatelessWidget {
   const _AttendanceView();
 
-  static const _activities = ['Shift In', 'Shift Out'];
+  static const _activities = ['Shift-In', 'Shift-Out'];
 
   @override
   Widget build(BuildContext context) {
@@ -78,10 +77,8 @@ class _AttendanceView extends StatelessWidget {
                     padding: const EdgeInsets.fromLTRB(20, 28, 20, 0),
                     child: LocationCard(
                       state: state,
-                      onRefresh:
-                          () => bloc.add(
-                            const AttendanceLocationRequestedEvent(),
-                          ),
+                      onRefresh: () =>
+                          bloc.add(const AttendanceLocationRequestedEvent()),
                     ),
                   ),
                 ),
@@ -99,12 +96,11 @@ class _AttendanceView extends StatelessWidget {
           bottomNavigationBar: _BottomActionArea(
             state: state,
             activities: _activities,
-            onActivitySelected:
-                (v) => bloc.add(AttendanceActivitySelectedEvent(v!)),
-            onSubmit:
-                state.selectedActivity != null && !state.isLoading
-                    ? () => bloc.add(const AttendanceSubmitEvent())
-                    : null,
+            onActivitySelected: (v) =>
+                bloc.add(AttendanceActivitySelectedEvent(v!)),
+            onSubmit: state.selectedActivity != null && !state.isLoading
+                ? () => bloc.add(const AttendanceSubmitEvent())
+                : null,
           ),
         );
       },
@@ -305,16 +301,16 @@ class _BottomActionArea extends StatelessWidget {
                       child: Row(
                         children: [
                           Icon(
-                            a == 'Shift In'
+                            a == 'Shift-In'
                                 ? Icons.login_rounded
                                 : Icons.logout_rounded,
                             size: 18,
-                            color: a == 'Shift In'
+                            color: a == 'Shift-In'
                                 ? const Color(0xFF1B9E4E)
                                 : const Color(0xFFD93025),
                           ),
                           const SizedBox(width: 10),
-                          Text(a),
+                          Text(a.replaceAll('-', ' ')),
                         ],
                       ),
                     ),
@@ -333,32 +329,30 @@ class _BottomActionArea extends StatelessWidget {
             child: FilledButton(
               onPressed: onSubmit,
               style: FilledButton.styleFrom(
-                backgroundColor:
-                    onSubmit != null
-                        ? theme.colorScheme.primary
-                        : Colors.grey.shade300,
+                backgroundColor: onSubmit != null
+                    ? theme.colorScheme.primary
+                    : Colors.grey.shade300,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              child:
-                  state.isLoading
-                      ? const SizedBox(
-                        width: 22,
-                        height: 22,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2.5,
-                          color: Colors.white,
-                        ),
-                      )
-                      : const Text(
-                        'Submit',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white,
-                        ),
+              child: state.isLoading
+                  ? const SizedBox(
+                      width: 22,
+                      height: 22,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.5,
+                        color: Colors.white,
                       ),
+                    )
+                  : const Text(
+                      'Submit',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
+                    ),
             ),
           ),
         ],

@@ -8,5 +8,5 @@ class ApiUrls {
   /// ACTIVITY
   static const String getShifts = '/shifts';
   static const String getMeetings = '/meetings';
-  static const String createActivity = '/activity';
+  static const String createActivity = '/activity/create';
 }
