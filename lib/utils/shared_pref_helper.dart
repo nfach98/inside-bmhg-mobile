@@ -17,5 +17,15 @@ class SharedPrefHelper {
   Future<void> saveToken(String token) =>
       setString(PrefKeys.authToken, token);
 
-  Future<void> clearToken() => remove(PrefKeys.authToken);
+  String? getUserName() => _pref.getString(PrefKeys.userName);
+
+  Future<void> saveUserName(String name) =>
+      setString(PrefKeys.userName, name);
+
+  Future<void> clearToken() async {
+    await remove(PrefKeys.authToken);
+    await remove(PrefKeys.userName);
+    await remove(PrefKeys.userEmail);
+    await remove(PrefKeys.userJabatan);
+  }
 }

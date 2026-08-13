@@ -3,12 +3,20 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:injectable/injectable.dart';
+import 'package:inside_bmhg/data/repositories/activity_repository.dart';
+import 'package:inside_bmhg/data/repositories/auth_repository.dart';
 import 'package:inside_bmhg/ui/attendance/bloc/attendance_event.dart';
 import 'package:inside_bmhg/ui/attendance/bloc/attendance_state.dart';
 
 @injectable
 class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
-  AttendanceBloc() : super(AttendanceState()) {
+  final ActivityRepository _activityRepository;
+  final AuthRepository _authRepository;
+
+  AttendanceBloc(
+    this._activityRepository,
+    this._authRepository,
+  ) : super(AttendanceState()) {
     on<AttendanceInitialEvent>(_onInitial);
     on<AttendanceTimeTickEvent>(_onTimeTick);
     on<AttendanceLocationRequestedEvent>(_onLocationRequested);
@@ -31,6 +39,12 @@ class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
 
     // Langsung minta lokasi
     add(const AttendanceLocationRequestedEvent());
+
+    // Ambil nama user terkonfirmasi dari AuthRepository
+    final userName = await _authRepository.getUserProfile();
+    if (userName != null && userName.isNotEmpty) {
+      emit(state.copyWith(userName: userName));
+    }
   }
 
   void _onTimeTick(
@@ -136,19 +150,39 @@ class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
     AttendanceSubmitEvent event,
     Emitter<AttendanceState> emit,
   ) async {
-    if (state.selectedActivity == null) return;
+    final activity = state.selectedActivity;
+    if (activity == null) return;
+    if (state.latitude == null || state.longitude == null) {
+      emit(state.copyWith(
+        isLoading: false,
+        locationError: 'Lokasi belum didapatkan. Pastikan GPS aktif.',
+      ));
+      return;
+    }
 
     emit(state.copyWith(isLoading: true));
 
-    // TODO: Panggil API absen di sini
-    await Future.delayed(const Duration(seconds: 2));
+    try {
+      final res = await _activityRepository.createactivity(
+        activity,
+        state.latitude.toString(),
+        state.longitude.toString(),
+      );
 
-    emit(
-      state.copyWith(
-        isLoading: false,
-        response: 'Absen berhasil dicatat!',
-      ),
-    );
+      emit(
+        state.copyWith(
+          isLoading: false,
+          response: res.message ?? 'Absen berhasil dicatat!',
+        ),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(
+          isLoading: false,
+          locationError: 'Gagal mencatat presensi: ${e.toString().replaceAll('Exception: ', '')}',
+        ),
+      );
+    }
   }
 
   // ---------------------------------------------------------------------------

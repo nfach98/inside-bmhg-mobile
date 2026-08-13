@@ -21,6 +21,8 @@ dependencies:
   shared_preferences: ^2.5.5
   syncfusion_flutter_charts: ^33.2.8
   permission_handler: ^11.3.1
+  url_launcher: ^6.3.1
+  flutter_web_auth_2: ^3.1.2
 
 dev_dependencies:
   build_runner: ^2.15.0

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:inside_bmhg/config/injection.dart';
 import 'package:inside_bmhg/ui/attendance/bloc/attendance_bloc.dart';
 import 'package:inside_bmhg/ui/attendance/bloc/attendance_event.dart';
@@ -27,7 +28,7 @@ class AttendanceScreen extends StatelessWidget {
 class _AttendanceView extends StatelessWidget {
   const _AttendanceView();
 
-  static const _activities = ['Shift In', 'Shift Out'];
+  static const _activities = ['Shift In', 'Shift Out', 'Weekly Meeting'];
 
   @override
   Widget build(BuildContext context) {
@@ -59,8 +60,8 @@ class _AttendanceView extends StatelessWidget {
                 // ── App bar custom ─────────────────────────────────────────
                 SliverToBoxAdapter(
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-                    child: _UserHeader(),
+                    padding: const EdgeInsets.fromLTRB(16, 16, 20, 0),
+                    child: _UserHeader(userName: state.userName),
                   ),
                 ),
 
@@ -117,12 +118,31 @@ class _AttendanceView extends StatelessWidget {
 // ---------------------------------------------------------------------------
 
 class _UserHeader extends StatelessWidget {
+  const _UserHeader({this.userName});
+
+  final String? userName;
+
   @override
   Widget build(BuildContext context) {
     final primary = Theme.of(context).colorScheme.primary;
+    final displayName =
+        (userName != null && userName!.isNotEmpty) ? userName! : 'Pengguna';
 
     return Row(
       children: [
+        IconButton(
+          onPressed: () {
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.go('/');
+            }
+          },
+          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
+          tooltip: 'Kembali',
+        ),
+        const SizedBox(width: 4),
+
         // Avatar
         Container(
           width: 38,
@@ -138,18 +158,22 @@ class _UserHeader extends StatelessWidget {
         const SizedBox(width: 10),
 
         // Nama dalam pill
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-          decoration: BoxDecoration(
-            color: const Color(0xFFEEF0FB),
-            borderRadius: BorderRadius.circular(30),
-          ),
-          child: Text(
-            'Harvest Walukow',
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: primary,
+        Expanded(
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            decoration: BoxDecoration(
+              color: const Color(0xFFEEF0FB),
+              borderRadius: BorderRadius.circular(30),
+            ),
+            child: Text(
+              displayName,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: primary,
+              ),
             ),
           ),
         ),
@@ -307,11 +331,15 @@ class _BottomActionArea extends StatelessWidget {
                           Icon(
                             a == 'Shift In'
                                 ? Icons.login_rounded
-                                : Icons.logout_rounded,
+                                : a == 'Shift Out'
+                                    ? Icons.logout_rounded
+                                    : Icons.groups_rounded,
                             size: 18,
                             color: a == 'Shift In'
                                 ? const Color(0xFF1B9E4E)
-                                : const Color(0xFFD93025),
+                                : a == 'Shift Out'
+                                    ? const Color(0xFFD93025)
+                                    : const Color(0xFF1976D2),
                           ),
                           const SizedBox(width: 10),
                           Text(a),

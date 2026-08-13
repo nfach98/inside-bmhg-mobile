@@ -1,8 +1,9 @@
 class ApiUrls {
-  static const String BASE_URL = 'http://184.174.33.2/api';
+  static const String BASE_URL = 'https://inside.beasiswamahaghora.com/api';
 
   /// AUTHENTICATION
   static const String login = '/login';
+  static const String ssoLogin = 'https://beasiswamahaghora.com/login?redirect=https://inside.beasiswamahaghora.com/sso-login-mobile';
   static const String getProfile = '/user';
 
   /// ACTIVITY

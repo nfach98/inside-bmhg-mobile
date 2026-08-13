@@ -35,12 +35,17 @@ extension GetItInjectableX on _i174.GetIt {
       () => registerModule.prefs,
       preResolve: true,
     );
-    gh.factory<_i535.AttendanceBloc>(() => _i535.AttendanceBloc());
     gh.singleton<_i259.SharedPrefHelper>(
       () => _i259.SharedPrefHelper(gh<_i460.SharedPreferences>()),
     );
     gh.lazySingleton<_i361.Dio>(
       () => registerModule.dio(gh<_i259.SharedPrefHelper>()),
+    );
+    gh.factory<_i29.ActivityRepository>(
+      () => _i29.ActivityRepository(
+        spHelper: gh<_i259.SharedPrefHelper>(),
+        dio: gh<_i361.Dio>(),
+      ),
     );
     gh.factory<_i578.AuthRepository>(
       () => _i578.AuthRepository(
@@ -48,19 +53,22 @@ extension GetItInjectableX on _i174.GetIt {
         spHelper: gh<_i259.SharedPrefHelper>(),
       ),
     );
-    gh.factory<_i401.HomeBloc>(
-      () => _i401.HomeBloc(gh<_i578.AuthRepository>()),
-    );
     gh.factory<_i919.LoginBloc>(
       () => _i919.LoginBloc(gh<_i578.AuthRepository>()),
     );
     gh.factory<_i1062.SplashBloc>(
       () => _i1062.SplashBloc(gh<_i578.AuthRepository>()),
     );
-    gh.factory<_i29.ActivityRepository>(
-      () => _i29.ActivityRepository(
-        spHelper: gh<_i259.SharedPrefHelper>(),
-        dio: gh<_i361.Dio>(),
+    gh.factory<_i535.AttendanceBloc>(
+      () => _i535.AttendanceBloc(
+        gh<_i29.ActivityRepository>(),
+        gh<_i578.AuthRepository>(),
+      ),
+    );
+    gh.factory<_i401.HomeBloc>(
+      () => _i401.HomeBloc(
+        gh<_i578.AuthRepository>(),
+        gh<_i29.ActivityRepository>(),
       ),
     );
     return this;

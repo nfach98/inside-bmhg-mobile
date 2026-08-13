@@ -314,7 +314,42 @@ class _LoginScreenState extends State<LoginScreen>
                       ),
 
                       // Exact Title to Username Gap: 113.5px
-                      const SizedBox(height: 113.5),
+                      const SizedBox(height: 32.0),
+
+                      // SSO Login Button
+                      SlideTransition(
+                        position: _buttonSlide,
+                        child: FadeTransition(
+                          opacity: _buttonFade,
+                          child: _buildSSOButton(context),
+                        ),
+                      ),
+
+                      const SizedBox(height: 32.0),
+
+                      // Divider "atau"
+                      FadeTransition(
+                        opacity: _forgotFade,
+                        child: const Row(
+                          children: [
+                            Expanded(child: Divider(color: Colors.grey, thickness: 0.5)),
+                            Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 16),
+                              child: Text(
+                                'atau login dengan email',
+                                style: TextStyle(
+                                  fontFamily: 'Archivo',
+                                  fontSize: 12,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ),
+                            Expanded(child: Divider(color: Colors.grey, thickness: 0.5)),
+                          ],
+                        ),
+                      ),
+
+                      const SizedBox(height: 32.0),
 
                       // 3. Email Label (Inter regular 14px, #000000)
                       SlideTransition(
@@ -598,17 +633,70 @@ class _LoginScreenState extends State<LoginScreen>
   }
 
   Widget _buildLoginButton(BuildContext blocContext) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 250),
-      curve: Curves.easeOutCubic,
-      width: _isLoading ? _fieldHeight : double.infinity,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final targetWidth = _isLoading ? _fieldHeight : constraints.maxWidth;
+        return AnimatedContainer(
+          duration: const Duration(milliseconds: 250),
+          curve: Curves.easeOutCubic,
+          width: targetWidth,
+          height: _fieldHeight,
+          decoration: BoxDecoration(
+            color: _brandNavy,
+            borderRadius: BorderRadius.circular(_isLoading ? (_fieldHeight / 2) : 8),
+            boxShadow: [
+              BoxShadow(
+                color: _brandNavy.withValues(alpha: 0.24),
+                blurRadius: 10,
+                offset: const Offset(0, 3),
+              ),
+            ],
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(_isLoading ? (_fieldHeight / 2) : 8),
+              onTap: _isLoading ? null : () => _handleLogin(blocContext),
+              child: Center(
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 200),
+                  child: _isLoading
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                            strokeWidth: 2.2,
+                          ),
+                        )
+                      : const Text(
+                          'Log In',
+                          style: TextStyle(
+                            fontFamily: 'Archivo',
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.white,
+                          ),
+                        ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildSSOButton(BuildContext blocContext) {
+    return Container(
       height: _fieldHeight,
       decoration: BoxDecoration(
-        color: _brandNavy,
-        borderRadius: BorderRadius.circular(_isLoading ? (_fieldHeight / 2) : 8),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: _brandNavy, width: 1.0),
         boxShadow: [
           BoxShadow(
-            color: _brandNavy.withOpacity(0.24),
+            color: Colors.black.withOpacity(0.05),
             blurRadius: 10,
             offset: const Offset(0, 3),
           ),
@@ -617,29 +705,26 @@ class _LoginScreenState extends State<LoginScreen>
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(_isLoading ? (_fieldHeight / 2) : 8),
-          onTap: _isLoading ? null : () => _handleLogin(blocContext),
+          borderRadius: BorderRadius.circular(8),
+          onTap: _isLoading ? null : () {
+             blocContext.read<LoginBloc>().add(LoginSSOEvent());
+          },
           child: Center(
-            child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 200),
-              child: _isLoading
-                  ? const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                        strokeWidth: 2.2,
-                      ),
-                    )
-                  : const Text(
-                      'Log In',
-                      style: TextStyle(
-                        fontFamily: 'Archivo',
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white,
-                      ),
-                    ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.school_rounded, color: _brandNavy, size: 18),
+                const SizedBox(width: 10),
+                const Text(
+                  'Log in via Mahaghora SSO',
+                  style: TextStyle(
+                    fontFamily: 'Archivo',
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: _brandNavy,
+                  ),
+                ),
+              ],
             ),
           ),
         ),

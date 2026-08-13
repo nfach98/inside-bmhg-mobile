@@ -12,6 +12,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   LoginBloc(this._authRepository) : super(const LoginState()) {
     on<LoginInitialEvent>(_onLoginInitial);
     on<LoginSubmitEvent>(_onLoginSubmit);
+    on<LoginSSOEvent>(_onLoginSSO);
   }
 
   void _onLoginInitial(
@@ -19,6 +20,28 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     Emitter<LoginState> emit,
   ) async {
     emit(const LoginState());
+  }
+
+  void _onLoginSSO(
+    LoginSSOEvent event,
+    Emitter<LoginState> emit,
+  ) async {
+    emit(state.copyWith(status: LoginStatus.loading, errorMessage: null));
+
+    try {
+      await _authRepository.loginWithSSO();
+      emit(state.copyWith(status: LoginStatus.success));
+    } on ApiException catch (e) {
+      emit(state.copyWith(
+        status: LoginStatus.failure,
+        errorMessage: e.message,
+      ));
+    } catch (e) {
+      emit(state.copyWith(
+        status: LoginStatus.failure,
+        errorMessage: 'Terjadi kesalahan SSO: ${e.toString()}',
+      ));
+    }
   }
 
   void _onLoginSubmit(

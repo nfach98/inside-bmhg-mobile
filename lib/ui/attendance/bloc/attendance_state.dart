@@ -13,6 +13,7 @@ class AttendanceState extends Equatable {
     this.longitude,
     this.locationName,
     this.locationError,
+    this.userName,
     DateTime? currentTime,
   }) : currentTime = currentTime ?? DateTime.now();
 
@@ -25,6 +26,7 @@ class AttendanceState extends Equatable {
   final double? longitude;
   final String? locationName;
   final String? locationError;
+  final String? userName;
   final DateTime currentTime;
 
   AttendanceState copyWith({
@@ -37,6 +39,7 @@ class AttendanceState extends Equatable {
     double? longitude,
     String? locationName,
     String? locationError,
+    String? userName,
     DateTime? currentTime,
     bool clearLocationError = false,
     bool clearSelectedActivity = false,
@@ -55,6 +58,7 @@ class AttendanceState extends Equatable {
       locationName: locationName ?? this.locationName,
       locationError:
           clearLocationError ? null : (locationError ?? this.locationError),
+      userName: userName ?? this.userName,
       currentTime: currentTime ?? this.currentTime,
     );
   }
@@ -70,6 +74,7 @@ class AttendanceState extends Equatable {
     longitude,
     locationName,
     locationError,
+    userName,
     currentTime,
   ];
 }

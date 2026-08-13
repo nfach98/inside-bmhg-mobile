@@ -12,7 +12,6 @@ class HomeScreen extends StatelessWidget {
 
   static const Color _brandNavy = Color(0xFF1A2185);
   static const Color _pureBlack = Color(0xFF000000);
-  static const Color _neutralGrey = Color(0xFFF6F8FB);
 
   void _showLogoutDialog(BuildContext context, HomeBloc bloc) {
     showDialog(
@@ -141,36 +140,21 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => getIt<HomeBloc>(),
+      create: (context) => getIt<HomeBloc>()..add(HomeInitialEvent()),
       child: BlocConsumer<HomeBloc, HomeState>(
         listener: (context, state) {
           if (state.status == HomeStatus.logoutSuccess) {
             context.go('/login');
           } else if (state.status == HomeStatus.failure) {
-            _showSnackBar(context, state.errorMessage ?? 'Gagal melakukan logout');
+            _showSnackBar(context, state.errorMessage ?? 'Gagal memuat data');
           }
         },
         builder: (context, state) {
           final bloc = context.read<HomeBloc>();
           final isLoading = state.status == HomeStatus.loading;
 
-          // Data dummy chart
-          final shifts = [
-            ShiftData(day: 'Senin', hours: 5),
-            ShiftData(day: 'Selasa', hours: 6),
-            ShiftData(day: 'Rabu', hours: 6),
-            ShiftData(day: 'Kamis', hours: 4),
-            ShiftData(day: "Jum'at", hours: 6),
-          ];
-
-          // Data dummy meeting (Nantinya data ini diambil dari `state`)
-          final meetings = [
-            MeetingData(date: '1', status: 'checked'),
-            MeetingData(date: '8', status: 'crossed'),
-            MeetingData(date: '15', status: 'checked'),
-            MeetingData(date: '22', status: 'empty'),
-            MeetingData(date: '29', status: 'empty'),
-          ];
+          final shifts = state.shifts;
+          final meetings = state.meetings;
 
           return Scaffold(
             backgroundColor: Colors.white,
@@ -235,9 +219,9 @@ class HomeScreen extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(height: 4),
-                          const Text(
-                            '7 Jam',
-                            style: TextStyle(
+                          Text(
+                            '${state.totalHours} Jam',
+                            style: const TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.bold,
                             ),
@@ -289,9 +273,9 @@ class HomeScreen extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(height: 4),
-                          const Text(
-                            'Maret',
-                            style: TextStyle(
+                          Text(
+                            state.currentMonthName,
+                            style: const TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.bold,
                             ),
@@ -406,18 +390,4 @@ class HomeScreen extends StatelessWidget {
       ],
     );
   }
-}
-
-// Model data untuk Chart
-class ShiftData {
-  final String day;
-  final double hours;
-  ShiftData({required this.day, required this.hours});
-}
-
-// Model data untuk List Meeting
-class MeetingData {
-  final String date;
-  final String status; // 'checked', 'crossed', atau 'empty'
-  MeetingData({required this.date, required this.status});
 }
